@@ -4,24 +4,21 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
-public class Dish {
+public class CartItem {
 
-    @Column(name="dishId")
+    @Column(name="itemId")
     @Id
     @GeneratedValue(strategy =  GenerationType.AUTO)
     Integer id;
 
     @Column
-    String name;
+    Integer dishId;
 
     @Column
-    Integer available;
+    Integer quantity;
 
-    @Column
-    Double cost;
 }

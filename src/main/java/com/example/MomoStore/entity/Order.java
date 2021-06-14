@@ -19,20 +19,18 @@ public class Order {
     Integer id;
 
     @Column
-    Integer userId;
-
-    @Column
-    Date date;
-
-    @Column
-    Boolean scheduled;
+    Date time;
 
     @Column
     Integer scheduledTime;
 
+    @JoinColumn(name = "orderId")
+    @OneToMany
+    List<CartItem> items;
+
     @Column
     String status;
 
-    @ManyToMany
-    List<Dish> items;
+    @Column
+    Double price;
 }

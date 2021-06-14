@@ -28,6 +28,11 @@ public class User {
     @Column
     Boolean active;
 
-    @ManyToMany
-    List<Dish> cart;
+    @JoinColumn(name = "userId")
+    @OneToMany
+    List<CartItem> cart;
+
+    @JoinColumn(name = "userId")
+    @OneToMany
+    List<Order> history;
 }
