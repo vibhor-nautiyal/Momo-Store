@@ -1,6 +1,6 @@
 package com.example.MomoStore.service;
 
-import com.example.MomoStore.dto.request.ChangeAvailabilityRequest;
+import com.example.MomoStore.dto.request.UpdateDishRequest;
 import com.example.MomoStore.dto.request.NewDishRequest;
 import com.example.MomoStore.dto.Transformer;
 import com.example.MomoStore.dto.response.DishResponse;
@@ -31,9 +31,10 @@ public class AdminServiceImpl {
         return transformer.dishToDishResponse(dish);
     }
 
-    public DishResponse changeAvailability(ChangeAvailabilityRequest request){
+    public DishResponse updateDish(UpdateDishRequest request){
         Dish dish=dishRepo.findById(request.getDishId()).orElseThrow(()->new DishNotFoundException("Dish with id "+request.getDishId()+" not found."));
         dish.setAvailable(request.getAvailable());
+        dish.setCost(request.getCost());
         dish=dishRepo.save(dish);
         return transformer.dishToDishResponse(dish);
     }

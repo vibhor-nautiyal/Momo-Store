@@ -69,6 +69,11 @@ public class UserController {
         return new ResponseEntity<>(userService.removeFromCart(request),HttpStatus.OK);
     }
 
+    @PatchMapping("/cart-item")
+    public ResponseEntity<UserResponse> updateCartItem(@RequestBody AddToCartRequest request){
+        return new ResponseEntity<>(userService.updateCartItem(request),HttpStatus.OK);
+    }
+
     @PostMapping("/order/{id}")
     public ResponseEntity<OrderResponse> order(@PathVariable Integer id){
 

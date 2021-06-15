@@ -1,6 +1,6 @@
 package com.example.MomoStore.controller;
 
-import com.example.MomoStore.dto.request.ChangeAvailabilityRequest;
+import com.example.MomoStore.dto.request.UpdateDishRequest;
 import com.example.MomoStore.dto.request.NewDishRequest;
 import com.example.MomoStore.dto.response.DishResponse;
 import com.example.MomoStore.service.AdminServiceImpl;
@@ -39,8 +39,8 @@ public class AdminController {
     }
 
     @PatchMapping("/quantity")
-    public ResponseEntity<DishResponse> changeAvailabilty(@RequestBody ChangeAvailabilityRequest request){
-        return new ResponseEntity<>(adminService.changeAvailability(request),HttpStatus.OK);
+    public ResponseEntity<DishResponse> changeAvailabilty(@RequestBody UpdateDishRequest request){
+        return new ResponseEntity<>(adminService.updateDish(request),HttpStatus.OK);
     }
 
     @DeleteMapping("/dish/{id}")

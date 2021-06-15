@@ -6,7 +6,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ChangeAvailabilityRequest {
+public class UpdateDishRequest {
     Integer dishId;
     Integer available;
+    Double cost;
 }

@@ -90,6 +90,21 @@ public class UserServiceImpl {
         return transformer.userToUserResponse(user);
     }
 
+    public UserResponse updateCartItem(AddToCartRequest request){
+
+        Dish dish=dishRepo.findById(request.getDishId()).orElseThrow(()->new DishNotFoundException("Dish with id "+request.getDishId()+" not found."));
+        if(dish.getAvailable()<request.getQuantity()){
+            throw new QuantityException("Quantity Exceeded for dish id="+request.getDishId());
+        }
+        User user=userRepo.findById(request.getUserId()).orElseThrow(()-> new UserNotFoundException("User with id="+request.getUserId()+" not found."));
+        CartItem cartItem=cartItemRepo.findByUserIdAndDishId(request.getUserId(), request.getDishId());
+        cartItem.setQuantity(request.getQuantity());
+        cartItemRepo.save(cartItem);
+//        user.getCart().add(cartItem);
+//        userRepo.save(user);
+        return transformer.userToUserResponse(user);
+    }
+
     public UserResponse removeFromCart(RemoveFromCartRequest request){
 
         cartItemRepo.deleteByUserIdAndDishId(request.getUserId(),request.getDishId());
@@ -119,7 +134,7 @@ public class UserServiceImpl {
         }
         Order order=new Order();
         order.setItems(orderItems);
-        order.setStatus("submitted");
+        order.setStatus("active");
         order.setTime(new Date());
         order.setPrice(bill);
 
@@ -158,7 +173,7 @@ public class UserServiceImpl {
             if(currTime.after(scheduledTime))
                 throw new WrongTimeException("Active Scheduled Order can't be cancelled");
 
-            order.setStatus("Cencelled");
+            order.setStatus("Cancelled");
             order=orderRepo.save(order);
             return transformer.orderToOrderResponse(order);
         }
