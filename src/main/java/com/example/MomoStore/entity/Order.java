@@ -26,7 +26,7 @@ public class Order {
 
     @JoinColumn(name = "orderId")
     @OneToMany
-    List<CartItem> items;
+    List<OrderItem> items;
 
     @Column
     String status;

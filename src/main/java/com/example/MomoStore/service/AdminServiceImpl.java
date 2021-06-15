@@ -5,6 +5,7 @@ import com.example.MomoStore.dto.request.NewDishRequest;
 import com.example.MomoStore.dto.Transformer;
 import com.example.MomoStore.dto.response.DishResponse;
 import com.example.MomoStore.entity.Dish;
+import com.example.MomoStore.exception.DishNotFoundException;
 import com.example.MomoStore.repository.DishRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,9 @@ import java.util.List;
 @Service
 public class AdminServiceImpl {
 
-    DishRepo dishRepo;
-    Transformer transformer;
+    private DishRepo dishRepo;
+    private Transformer transformer;
+
     @Autowired
     public AdminServiceImpl(DishRepo dishRepo,Transformer transformer){
         this.dishRepo=dishRepo;
@@ -30,14 +32,14 @@ public class AdminServiceImpl {
     }
 
     public DishResponse changeAvailability(ChangeAvailabilityRequest request){
-        Dish dish=dishRepo.findById(request.getDishId()).orElseThrow();
+        Dish dish=dishRepo.findById(request.getDishId()).orElseThrow(()->new DishNotFoundException("Dish with id "+request.getDishId()+" not found."));
         dish.setAvailable(request.getAvailable());
         dish=dishRepo.save(dish);
         return transformer.dishToDishResponse(dish);
     }
 
     public void removeDish(Integer id){
-        Dish dish=dishRepo.findById(id).orElseThrow();
+        Dish dish=dishRepo.findById(id).orElseThrow(()->new DishNotFoundException("Dish with id "+id+" not found."));
         dish.setActive(false);
         dishRepo.save(dish);
     }

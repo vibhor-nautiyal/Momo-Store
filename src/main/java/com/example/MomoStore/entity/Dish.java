@@ -13,7 +13,7 @@ public class Dish {
 
     @Column(name="dishId")
     @Id
-    @GeneratedValue(strategy =  GenerationType.AUTO)
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
     Integer id;
 
     @Column(unique = true)

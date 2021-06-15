@@ -1,11 +1,12 @@
 package com.example.MomoStore.dto;
 
+import com.example.MomoStore.dto.request.AddToCartRequest;
 import com.example.MomoStore.dto.request.NewDishRequest;
 import com.example.MomoStore.dto.request.NewUserRequest;
 import com.example.MomoStore.dto.response.DishResponse;
+import com.example.MomoStore.dto.response.OrderResponse;
 import com.example.MomoStore.dto.response.UserResponse;
-import com.example.MomoStore.entity.Dish;
-import com.example.MomoStore.entity.User;
+import com.example.MomoStore.entity.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -50,6 +51,30 @@ public class Transformer {
         response.setHistory(user.getHistory());
         response.setPhone(user.getPhone());
         response.setName(user.getName());
+        return response;
+    }
+
+    public CartItem createCartItem(AddToCartRequest request) {
+        CartItem cartItem=new CartItem();
+        cartItem.setDishId(request.getDishId());
+        cartItem.setQuantity(request.getQuantity());
+        return cartItem;
+    }
+
+    public OrderItem cartItemToOrderItem(CartItem cartItem){
+        OrderItem orderItem=new OrderItem();
+        orderItem.setQuantity(cartItem.getQuantity());
+        orderItem.setDishId(cartItem.getDishId());
+        return orderItem;
+    }
+
+    public OrderResponse orderToOrderResponse(Order order) {
+        OrderResponse response=new OrderResponse();
+//        response.setOrderId(order.getId());
+        response.setTime(order.getTime());
+        response.setScheduledTime(order.getScheduledTime());
+        response.setPrice(order.getPrice());
+        response.setStatus(order.getStatus());
         return response;
     }
 }

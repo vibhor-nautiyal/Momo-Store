@@ -13,10 +13,10 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
 
-    AdminServiceImpl adminService;
+    private AdminServiceImpl adminService;
 
     @Autowired
-    AdminController(AdminServiceImpl adminService){
+    public AdminController(AdminServiceImpl adminService){
         this.adminService=adminService;
     }
 
