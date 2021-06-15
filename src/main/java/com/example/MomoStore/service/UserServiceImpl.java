@@ -8,9 +8,7 @@ import com.example.MomoStore.dto.request.UpdateUserRequest;
 import com.example.MomoStore.dto.response.OrderResponse;
 import com.example.MomoStore.dto.response.UserResponse;
 import com.example.MomoStore.entity.*;
-import com.example.MomoStore.exception.DishNotFoundException;
-import com.example.MomoStore.exception.QuantityException;
-import com.example.MomoStore.exception.UserNotFoundException;
+import com.example.MomoStore.exception.*;
 import com.example.MomoStore.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,8 +84,6 @@ public class UserServiceImpl {
         }
         User user=userRepo.findById(request.getUserId()).orElseThrow(()->new UserNotFoundException("User with id "+request.getUserId()+" not found."));
         CartItem cartItem=transformer.createCartItem(request);
-//        dish.setAvailable(dish.getAvailable()- request.getQuantity());
-//        dishRepo.save(dish);
         cartItemRepo.save(cartItem);
         user.getCart().add(cartItem);
         userRepo.save(user);
@@ -101,6 +97,11 @@ public class UserServiceImpl {
     }
 
     public OrderResponse checkout(Integer id){
+
+        Date date=new Date();
+        if(date.getHours()<11 && date.getHours()>=21)
+            throw new WrongTimeException("Order can be placed only between 9 AM and 11 PM.");
+
         User user=userRepo.findById(id).orElseThrow(()->new UserNotFoundException("User with id "+id+" not found."));
         List<OrderItem> orderItems=new ArrayList<>();
         Double bill=0.0;
@@ -112,6 +113,8 @@ public class UserServiceImpl {
             if(dish.getAvailable()< cartItem.getQuantity()){
                 throw new QuantityException("Quantity exceeded for dish id="+dish.getId());
             }
+            dish.setAvailable(dish.getAvailable()- cartItem.getQuantity());
+            dishRepo.save(dish);
             bill+=dish.getCost()* cartItem.getQuantity();
         }
         Order order=new Order();
@@ -127,6 +130,38 @@ public class UserServiceImpl {
         userRepo.save(user);
 
         return transformer.orderToOrderResponse(order);
+    }
+
+    public OrderResponse cancelOrder(Integer id){
+
+        Order order=orderRepo.findById(id).orElseThrow(()->new OrderNotFoundException("Order with id="+id+" not found."));
+
+        if(order.getScheduledTime()==null) {
+            Date currTime = new Date();
+            Date orderTime = order.getTime();
+            long minuteDiff = ((currTime.getTime() - orderTime.getTime()) / 60000) % 60;
+            if (minuteDiff >= 1) {
+                throw new WrongTimeException("Order cal only be cancelled within one minute.");
+            }
+            order.setStatus("Cancelled");
+            order = orderRepo.save(order);
+            for(OrderItem item: order.getItems()){
+                Dish dish=dishRepo.findById(item.getDishId()).orElseThrow(()-> new DishNotFoundException("Dish with id "+item.getDishId()+" not found."));
+                dish.setAvailable(dish.getAvailable()+item.getQuantity());
+                dishRepo.save(dish);
+            }
+            return transformer.orderToOrderResponse(order);
+        }
+        else{
+            Date currTime=new Date();
+            Date scheduledTime=order.getScheduledTime();
+            if(currTime.after(scheduledTime))
+                throw new WrongTimeException("Active Scheduled Order can't be cancelled");
+
+            order.setStatus("Cencelled");
+            order=orderRepo.save(order);
+            return transformer.orderToOrderResponse(order);
+        }
     }
 
 }

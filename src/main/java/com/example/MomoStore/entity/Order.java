@@ -22,7 +22,7 @@ public class Order {
     Date time;
 
     @Column
-    Integer scheduledTime;
+    Date scheduledTime;
 
     @JoinColumn(name = "orderId")
     @OneToMany

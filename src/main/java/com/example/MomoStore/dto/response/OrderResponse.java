@@ -12,6 +12,6 @@ public class OrderResponse {
 //    Integer orderId;
     Double price;
     Date time;
-    Integer scheduledTime;
+    Date scheduledTime;
     String status;
 }

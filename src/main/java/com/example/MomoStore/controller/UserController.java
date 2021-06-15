@@ -62,4 +62,12 @@ public class UserController {
     public OrderResponse order(@PathVariable Integer id){
         return userService.checkout(id);
     }
+
+    @DeleteMapping("/order/{id}")
+    public OrderResponse cancel(@PathVariable Integer id){
+        return userService.cancelOrder(id);
+    }
+
+
+
 }
