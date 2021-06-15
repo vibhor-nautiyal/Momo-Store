@@ -40,6 +40,7 @@ public class UserServiceImpl {
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
         user.setName(request.getName());
+        user=userRepo.save(user);
         return transformer.userToUserResponse(user);
     }
 
@@ -53,9 +54,14 @@ public class UserServiceImpl {
         Iterable<User> users=userRepo.findAll();
         List<UserResponse> response=new ArrayList<>();
         for(User user:users){
-            response.add(transformer.userToUserResponse(user));
+            if(user.getActive())
+                response.add(transformer.userToUserResponse(user));
         }
         return response;
+    }
+
+    public UserResponse addToCart(){
+
     }
 
 }

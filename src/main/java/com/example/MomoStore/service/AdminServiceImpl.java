@@ -38,7 +38,7 @@ public class AdminServiceImpl {
 
     public void removeDish(Integer id){
         Dish dish=dishRepo.findById(id).orElseThrow();
-        dish.setAvailable(0);
+        dish.setActive(false);
         dishRepo.save(dish);
     }
 
@@ -46,7 +46,8 @@ public class AdminServiceImpl {
         Iterable<Dish> dishes=dishRepo.findAll();
         List<DishResponse> response=new ArrayList<>();
         for(Dish dish:dishes){
-            response.add(transformer.dishToDishResponse(dish));
+            if(dish.getActive())
+               response.add(transformer.dishToDishResponse(dish));
         }
         return response;
     }

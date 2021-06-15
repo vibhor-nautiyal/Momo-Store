@@ -16,7 +16,7 @@ public class Dish {
     @GeneratedValue(strategy =  GenerationType.AUTO)
     Integer id;
 
-    @Column
+    @Column(unique = true)
     String name;
 
     @Column
@@ -24,4 +24,7 @@ public class Dish {
 
     @Column
     Double cost;
+
+    @Column
+    Boolean active;
 }

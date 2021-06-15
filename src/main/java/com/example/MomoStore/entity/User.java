@@ -22,7 +22,7 @@ public class User {
     @Column
     String address;
 
-    @Column
+    @Column(unique = true)
     Long phone;
 
     @Column

@@ -18,6 +18,7 @@ public class Transformer {
         dish.setName(newDishRequest.getName());
         dish.setCost(newDishRequest.getCost());
         dish.setAvailable(10);
+        dish.setActive(true);
         return dish;
     }
 
