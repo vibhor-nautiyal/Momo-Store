@@ -1,9 +1,6 @@
 package com.example.MomoStore.controller;
 
-import com.example.MomoStore.dto.request.AddToCartRequest;
-import com.example.MomoStore.dto.request.NewUserRequest;
-import com.example.MomoStore.dto.request.RemoveFromCartRequest;
-import com.example.MomoStore.dto.request.UpdateUserRequest;
+import com.example.MomoStore.dto.request.*;
 import com.example.MomoStore.dto.response.OrderResponse;
 import com.example.MomoStore.dto.response.UserResponse;
 import com.example.MomoStore.service.UserServiceImpl;
@@ -12,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -80,8 +78,18 @@ public class UserController {
         return new ResponseEntity<>(userService.checkout(id),HttpStatus.CREATED);
     }
 
+    @PostMapping("/scheduledOrder")
+    public ResponseEntity<OrderResponse> scheduledOrder(@RequestBody ScheduledOrderRequest request) throws ParseException {
+            return new ResponseEntity<>(userService.checkoutScheduled(request),HttpStatus.CREATED);
+    }
+
     @DeleteMapping("/order/{id}")
     public ResponseEntity<OrderResponse> cancel(@PathVariable Integer id){
         return new ResponseEntity<>(userService.cancelOrder(id),HttpStatus.OK);
+    }
+
+    @PatchMapping("/complete/{id}")
+    public ResponseEntity<OrderResponse> orderComplete(@PathVariable Integer id){
+        return new ResponseEntity<>(userService.received(id),HttpStatus.OK);
     }
 }

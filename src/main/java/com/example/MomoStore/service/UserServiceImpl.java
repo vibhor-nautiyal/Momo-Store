@@ -1,18 +1,18 @@
 package com.example.MomoStore.service;
 
 import com.example.MomoStore.dto.Transformer;
-import com.example.MomoStore.dto.request.AddToCartRequest;
-import com.example.MomoStore.dto.request.NewUserRequest;
-import com.example.MomoStore.dto.request.RemoveFromCartRequest;
-import com.example.MomoStore.dto.request.UpdateUserRequest;
+import com.example.MomoStore.dto.request.*;
 import com.example.MomoStore.dto.response.OrderResponse;
 import com.example.MomoStore.dto.response.UserResponse;
 import com.example.MomoStore.entity.*;
 import com.example.MomoStore.exception.*;
 import com.example.MomoStore.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -114,7 +114,7 @@ public class UserServiceImpl {
     public OrderResponse checkout(Integer id){
 
         Date date=new Date();
-        if(date.getHours()<11 && date.getHours()>=21)
+        if(date.getHours()<11 || date.getHours()>=21)
             throw new WrongTimeException("Order can be placed only between 9 AM and 11 PM.");
 
         User user=userRepo.findById(id).orElseThrow(()->new UserNotFoundException("User with id "+id+" not found."));
@@ -147,6 +147,58 @@ public class UserServiceImpl {
         return transformer.orderToOrderResponse(order);
     }
 
+
+    public OrderResponse checkoutScheduled(ScheduledOrderRequest request) throws ParseException {
+//        Date scheduledDate=new Date(request.getScheduledTime());
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+        Date scheduledDate=formatter.parse(request.getScheduledTime());
+        if(scheduledDate.getHours()<11 || scheduledDate.getHours()>=21)
+            throw new WrongTimeException("Order can be placed only between 9 AM and 11 PM.");
+
+        User user=userRepo.findById(request.getUserId()).orElseThrow(()->new UserNotFoundException("User with id "+request.getUserId()+" not found."));
+        List<OrderItem> orderItems=new ArrayList<>();
+        Double bill=0.0;
+        for(CartItem cartItem:user.getCart()){
+            OrderItem orderItem=transformer.cartItemToOrderItem(cartItem);
+            orderItems.add(orderItem);
+            Dish dish=dishRepo.findById(cartItem.getDishId()).orElseThrow(()->new DishNotFoundException("Dish with id "+cartItem.getDishId()+" not found."));
+            if(dish.getAvailable()< cartItem.getQuantity()){
+                throw new QuantityException("Quantity exceeded for dish id="+dish.getId());
+            }
+            orderItemRepo.save(orderItem);
+            dish.setAvailable(dish.getAvailable()- cartItem.getQuantity());
+            dishRepo.save(dish);
+            bill+=dish.getCost()* cartItem.getQuantity();
+        }
+        Order order=new Order();
+        order.setItems(orderItems);
+        order.setStatus("scheduled");
+        order.setTime(new Date());
+        order.setPrice(bill);
+        order.setScheduledTime(scheduledDate);
+        orderRepo.save(order);
+
+        user.getHistory().add(order);
+        user.getCart().clear();
+        userRepo.save(user);
+
+        return transformer.orderToOrderResponse(order);
+    }
+
+    @Scheduled(cron = "0 0 * * * *")
+    public void processOrders(){
+
+        Iterable<Order> scheduledOrders=orderRepo.findByStatus("scheduled");
+        Date current=new Date();
+        for(Order order:scheduledOrders){
+
+            if(order.getScheduledTime().getDate()==current.getDate() && order.getScheduledTime().getHours()==current.getHours()){
+                order.setStatus("active");
+            }
+            orderRepo.save(order);
+        }
+    }
+
     public OrderResponse cancelOrder(Integer id){
 
         Order order=orderRepo.findById(id).orElseThrow(()->new OrderNotFoundException("Order with id="+id+" not found."));
@@ -174,9 +226,20 @@ public class UserServiceImpl {
                 throw new WrongTimeException("Active Scheduled Order can't be cancelled");
 
             order.setStatus("Cancelled");
+            for(OrderItem item: order.getItems()){
+                Dish dish=dishRepo.findById(item.getDishId()).orElseThrow(()-> new DishNotFoundException("Dish with id "+item.getDishId()+" not found."));
+                dish.setAvailable(dish.getAvailable()+item.getQuantity());
+                dishRepo.save(dish);
+            }
             order=orderRepo.save(order);
             return transformer.orderToOrderResponse(order);
         }
     }
 
+    public OrderResponse received(Integer orderId){
+        Order order=orderRepo.findById(orderId).orElseThrow(()->new OrderNotFoundException("Order with id="+orderId+" not found"));
+        order.setStatus("completed");
+        orderRepo.save(order);
+        return transformer.orderToOrderResponse(order);
+    }
 }

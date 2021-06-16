@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderRepo extends CrudRepository<Order,Integer> {
+    Iterable<Order> findByStatus(String scheduled);
 }
