@@ -6,10 +6,7 @@ import com.example.MomoStore.dto.response.DishResponse;
 import com.example.MomoStore.dto.response.OrderResponse;
 import com.example.MomoStore.dto.response.UserResponse;
 import com.example.MomoStore.entity.User;
-import com.example.MomoStore.exception.DishNotFoundException;
-import com.example.MomoStore.exception.OrderNotFoundException;
-import com.example.MomoStore.exception.QuantityException;
-import com.example.MomoStore.exception.UserNotFoundException;
+import com.example.MomoStore.exception.*;
 import com.example.MomoStore.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -26,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -290,5 +288,93 @@ public class TestUserController {
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
 
         assertEquals(500,mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    public void testOrder_WRONGTIME() throws Exception{
+
+        String uri="/user/order/1";
+        Mockito.when(userService.checkout(Mockito.anyInt())).thenThrow(new WrongTimeException(""));
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        assertEquals(500,mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    public void testCheckoutScheduled() throws Exception {
+        String uri="/user/scheduledOrder";
+        Mockito.when(userService.checkoutScheduled(Mockito.any(ScheduledOrderRequest.class))).thenReturn(new OrderResponse());
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new ScheduledOrderRequest())))
+                .andReturn();
+        assertEquals(201,mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    public void testCheckoutScheduled_PARSEEXCEPTION() throws Exception {
+        String uri="/user/scheduledOrder";
+        Mockito.when(userService.checkoutScheduled(Mockito.any(ScheduledOrderRequest.class))).thenThrow(new ParseException("",1));
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new ScheduledOrderRequest())))
+                .andReturn();
+        assertEquals(500,mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    public void testCancel() throws Exception{
+        String uri="/user/order/1";
+        Mockito.when(userService.cancelOrder(Mockito.anyInt())).thenReturn(new OrderResponse());
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+        assertEquals(200,mvcResult.getResponse().getStatus());
+    }
+
+
+    @Test
+    public void testCancel_ORDERNOTFOUND() throws Exception{
+        String uri="/user/order/1";
+        Mockito.when(userService.cancelOrder(Mockito.anyInt())).thenThrow(new OrderNotFoundException(""));
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+        assertEquals(404,mvcResult.getResponse().getStatus());
+    }
+
+
+    @Test
+    public void testCancel_WRONGTIME() throws Exception{
+        String uri="/user/order/1";
+        Mockito.when(userService.cancelOrder(Mockito.anyInt())).thenThrow(new WrongTimeException(""));
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+        assertEquals(500,mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    public void testComplete() throws Exception {
+        String uri="/user/complete/1";
+        Mockito.when(userService.received(Mockito.anyInt())).thenReturn(new OrderResponse());
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+        assertEquals(200,mvcResult.getResponse().getStatus());
+    }
+
+
+    @Test
+    public void testComplete_ORDERNOTFOUND() throws Exception {
+        String uri="/user/complete/1";
+        Mockito.when(userService.received(Mockito.anyInt())).thenThrow(new OrderNotFoundException(""));
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+        assertEquals(404,mvcResult.getResponse().getStatus());
     }
 }
