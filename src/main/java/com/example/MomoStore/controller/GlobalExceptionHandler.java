@@ -31,12 +31,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(QuantityException.class)
     public ResponseEntity<String> quantityException(QuantityException e){
-        return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(WrongTimeException.class)
     public ResponseEntity<String> wrongTime(WrongTimeException e){
-        return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

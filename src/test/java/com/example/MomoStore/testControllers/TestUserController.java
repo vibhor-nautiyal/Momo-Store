@@ -1,13 +1,14 @@
 package com.example.MomoStore.testControllers;
 
 import com.example.MomoStore.controller.UserController;
-import com.example.MomoStore.dto.request.NewDishRequest;
-import com.example.MomoStore.dto.request.NewUserRequest;
-import com.example.MomoStore.dto.request.UpdateDishRequest;
-import com.example.MomoStore.dto.request.UpdateUserRequest;
+import com.example.MomoStore.dto.request.*;
 import com.example.MomoStore.dto.response.DishResponse;
+import com.example.MomoStore.dto.response.OrderResponse;
 import com.example.MomoStore.dto.response.UserResponse;
 import com.example.MomoStore.entity.User;
+import com.example.MomoStore.exception.DishNotFoundException;
+import com.example.MomoStore.exception.OrderNotFoundException;
+import com.example.MomoStore.exception.QuantityException;
 import com.example.MomoStore.exception.UserNotFoundException;
 import com.example.MomoStore.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -151,5 +152,143 @@ public class TestUserController {
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
 
         assertEquals(404,mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    public void testAddToCart() throws Exception{
+        String uri="/user/cart";
+        Mockito.when(userService.addToCart(Mockito.any(AddToCartRequest.class))).thenReturn(new UserResponse());
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new AddToCartRequest())))
+                .andReturn();
+
+        assertEquals(201,mvcResult.getResponse().getStatus());
+    }
+    @Test
+    public void testAddToCart_USERNOTFOUND() throws Exception{
+        String uri="/user/cart";
+        Mockito.when(userService.addToCart(Mockito.any(AddToCartRequest.class))).thenThrow(new UserNotFoundException(""));
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new AddToCartRequest())))
+                .andReturn();
+        assertEquals(404,mvcResult.getResponse().getStatus());
+    }
+    @Test
+    public void testAddToCart_DISHNOTFOUND() throws Exception{
+        String uri="/user/cart";
+        Mockito.when(userService.addToCart(Mockito.any(AddToCartRequest.class))).thenThrow(new DishNotFoundException(""));
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new AddToCartRequest())))
+                .andReturn();
+
+        assertEquals(404,mvcResult.getResponse().getStatus());
+    }
+
+
+    @Test
+    public void testRemoveFromCart() throws Exception{
+        String uri="/user/cart-item";
+        Mockito.when(userService.removeFromCart((Mockito.any(RemoveFromCartRequest.class)))).thenReturn(new UserResponse());
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new RemoveFromCartRequest())))
+                .andReturn();
+
+        assertEquals(200,mvcResult.getResponse().getStatus());
+    }
+    @Test
+    public void testRemoveFromCart_USERNOTFOUND() throws Exception{
+        String uri="/user/cart-item";
+        Mockito.when(userService.removeFromCart((Mockito.any(RemoveFromCartRequest.class)))).thenThrow(new UserNotFoundException(""));
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new RemoveFromCartRequest())))
+                .andReturn();
+        assertEquals(404,mvcResult.getResponse().getStatus());
+    }
+    @Test
+    public void testRemoveFromCart_DISHNOTFOUND() throws Exception{
+        String uri="/user/cart-item";
+        Mockito.when(userService.removeFromCart((Mockito.any(RemoveFromCartRequest.class)))).thenThrow(new DishNotFoundException(""));
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new RemoveFromCartRequest())))
+                .andReturn();
+
+        assertEquals(404,mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    public void testUpdateCart() throws Exception{
+        String uri="/user/cart-item";
+        Mockito.when(userService.updateCartItem(Mockito.any(AddToCartRequest.class))).thenReturn(new UserResponse());
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new AddToCartRequest())))
+                .andReturn();
+
+        assertEquals(200,mvcResult.getResponse().getStatus());
+    }
+    @Test
+    public void testUpdateCart_USERNOTFOUND() throws Exception{
+        String uri="/user/cart-item";
+        Mockito.when(userService.updateCartItem(Mockito.any(AddToCartRequest.class))).thenThrow(new UserNotFoundException(""));
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new AddToCartRequest())))
+                .andReturn();
+        assertEquals(404,mvcResult.getResponse().getStatus());
+    }
+    @Test
+    public void testUpdateCart_DISHNOTFOUND() throws Exception{
+        String uri="/user/cart-item";
+        Mockito.when(userService.updateCartItem(Mockito.any(AddToCartRequest.class))).thenThrow(new DishNotFoundException(""));
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new AddToCartRequest())))
+                .andReturn();
+
+        assertEquals(404,mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    public void testOrder() throws Exception {
+        String uri="/user/order/1";
+        Mockito.when(userService.checkout(Mockito.anyInt())).thenReturn(new OrderResponse());
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        assertEquals(201,mvcResult.getResponse().getStatus());
+    }
+    @Test
+    public void testOrder_ORDERNOTFOUND() throws Exception {
+        String uri="/user/order/1";
+        Mockito.when(userService.checkout(Mockito.anyInt())).thenThrow(new OrderNotFoundException(""));
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        assertEquals(404,mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    public void testOrder_INSUFFICIENT() throws Exception {
+        String uri="/user/order/1";
+        Mockito.when(userService.checkout(Mockito.anyInt())).thenThrow(new QuantityException(""));
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        assertEquals(500,mvcResult.getResponse().getStatus());
     }
 }
