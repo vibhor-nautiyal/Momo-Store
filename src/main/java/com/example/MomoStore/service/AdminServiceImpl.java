@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class AdminServiceImpl {
+public class AdminServiceImpl  implements AdminService{
 
     private DishRepo dishRepo;
     private Transformer transformer;

@@ -3,7 +3,7 @@ package com.example.MomoStore.controller;
 import com.example.MomoStore.dto.request.*;
 import com.example.MomoStore.dto.response.OrderResponse;
 import com.example.MomoStore.dto.response.UserResponse;
-import com.example.MomoStore.service.UserServiceImpl;
+import com.example.MomoStore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +16,10 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    private UserServiceImpl userService;
+    private UserService userService;
 
     @Autowired
-    public UserController(UserServiceImpl userService){
+    public UserController(UserService userService){
         this.userService=userService;
     }
 

@@ -3,7 +3,7 @@ package com.example.MomoStore.controller;
 import com.example.MomoStore.dto.request.UpdateDishRequest;
 import com.example.MomoStore.dto.request.NewDishRequest;
 import com.example.MomoStore.dto.response.DishResponse;
-import com.example.MomoStore.service.AdminServiceImpl;
+import com.example.MomoStore.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +15,10 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private AdminServiceImpl adminService;
+    private AdminService adminService;
 
     @Autowired
-    public AdminController(AdminServiceImpl adminService){
+    public AdminController(AdminService adminService){
         this.adminService=adminService;
     }
 

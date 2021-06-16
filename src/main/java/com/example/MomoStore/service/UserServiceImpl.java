@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class UserServiceImpl {
+public class UserServiceImpl implements UserService{
 
     private UserRepo userRepo;
     private Transformer transformer;
