@@ -9,5 +9,10 @@ class MomoStoreApplicationTests {
 	@Test
 	void contextLoads() {
 	}
+//	@Test
+//	public void main() {
+//		MomoStoreApplication.main(new String[] {});
+//	}
+
 
 }

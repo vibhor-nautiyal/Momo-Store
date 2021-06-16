@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService{
     public UserResponse removeFromCart(RemoveFromCartRequest request){
 
         cartItemRepo.deleteByUserIdAndDishId(request.getUserId(),request.getDishId());
-        return transformer.userToUserResponse(userRepo.findById(request.getUserId()).orElseThrow());
+        return transformer.userToUserResponse(userRepo.findById(request.getUserId()).orElseThrow(()-> new UserNotFoundException("User with id="+request.getUserId()+" not found.")));
     }
 
     public OrderResponse checkout(Integer id){

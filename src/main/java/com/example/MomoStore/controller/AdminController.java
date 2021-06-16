@@ -38,14 +38,16 @@ public class AdminController {
         return new ResponseEntity<>(adminService.addNewDish(request),HttpStatus.CREATED);
     }
 
-    @PatchMapping("/quantity")
-    public ResponseEntity<DishResponse> changeAvailabilty(@RequestBody UpdateDishRequest request){
+    @PatchMapping("/dish")
+    public ResponseEntity<DishResponse> updateDish(@RequestBody UpdateDishRequest request){
         return new ResponseEntity<>(adminService.updateDish(request),HttpStatus.OK);
     }
 
     @DeleteMapping("/dish/{id}")
     public ResponseEntity<String> deleteDish(@PathVariable Integer id){
+        System.out.println(id);
         adminService.removeDish(id);
+        System.out.println(id);
         return new ResponseEntity<>("Dish with id="+id+" deleted",HttpStatus.OK);
     }
 }
