@@ -2,10 +2,8 @@ package com.example.MomoStore.testControllers;
 
 import com.example.MomoStore.controller.UserController;
 import com.example.MomoStore.dto.request.*;
-import com.example.MomoStore.dto.response.DishResponse;
 import com.example.MomoStore.dto.response.OrderResponse;
 import com.example.MomoStore.dto.response.UserResponse;
-import com.example.MomoStore.entity.User;
 import com.example.MomoStore.exception.*;
 import com.example.MomoStore.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;

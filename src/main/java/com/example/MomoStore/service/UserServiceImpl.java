@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -159,7 +158,6 @@ public class UserServiceImpl implements UserService{
 
 
     public OrderResponse checkoutScheduled(ScheduledOrderRequest request) throws ParseException {
-//        Date scheduledDate=new Date(request.getScheduledTime());
         SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
         Date scheduledDate=formatter.parse(request.getScheduledTime());
         if(scheduledDate.getHours()<11 || scheduledDate.getHours()>=21)

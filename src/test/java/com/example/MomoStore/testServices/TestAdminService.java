@@ -8,16 +8,15 @@ import com.example.MomoStore.entity.Dish;
 import com.example.MomoStore.exception.DishNotFoundException;
 import com.example.MomoStore.repository.DishRepo;
 import com.example.MomoStore.service.AdminServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -33,18 +32,23 @@ public class TestAdminService {
     @InjectMocks
     AdminServiceImpl adminService;
 
+    private Dish dish;
+
+    @BeforeEach
+    public void Setup(){
+        dish=new Dish();
+        dish.setActive(true);
+        dish.setAvailable(10);
+        dish.setCost(10.0);
+        dish.setName("Momo");
+    }
+
     @Test
     public void testAddNewDish(){
 
         NewDishRequest request=new NewDishRequest();
         request.setName("Momo");
         request.setCost(10.0);
-
-        Dish dish=new Dish();
-        dish.setActive(true);
-        dish.setAvailable(10);
-        dish.setCost(10.0);
-        dish.setName("Momo");
 
         DishResponse response=new DishResponse();
         response.setDishCost(10.0);
@@ -67,18 +71,11 @@ public class TestAdminService {
         request.setAvailable(10);
         request.setCost(10.0);
 
-        Dish dish=new Dish();
-        dish.setActive(true);
-        dish.setAvailable(10);
-        dish.setCost(10.0);
-        dish.setName("Momo");
-
         DishResponse response=new DishResponse();
         response.setDishCost(10.0);
         response.setDishName("Momo");
         response.setAvailable(10);
 
-//        Mockito.when(transformer.dishDetailsToDish(Mockito.any(NewDishRequest.class))).thenReturn(dish);
         Mockito.when(dishRepo.findById(Mockito.anyInt())).thenReturn(Optional.of(dish));
         Mockito.when(transformer.dishToDishResponse(Mockito.any(Dish.class))).thenCallRealMethod();
         Mockito.when(dishRepo.save(Mockito.any(Dish.class))).thenReturn(dish);
@@ -97,66 +94,30 @@ public class TestAdminService {
         request.setAvailable(10);
         request.setCost(10.0);
 
-        Dish dish=new Dish();
-        dish.setActive(true);
-        dish.setAvailable(10);
-        dish.setCost(10.0);
-        dish.setName("Momo");
-
-        DishResponse response=new DishResponse();
-        response.setDishCost(10.0);
-        response.setDishName("Momo");
-        response.setAvailable(10);
-
-//        Mockito.when(transformer.dishDetailsToDish(Mockito.any(NewDishRequest.class))).thenReturn(dish);
         Mockito.when(dishRepo.findById(Mockito.anyInt())).thenReturn(Optional.empty());
-        Mockito.when(transformer.dishToDishResponse(Mockito.any(Dish.class))).thenCallRealMethod();
-        Mockito.when(dishRepo.save(Mockito.any(Dish.class))).thenReturn(dish);
 
         assertThrows(DishNotFoundException.class,()->adminService.updateDish(request));
-//        assertEquals(response.getAvailable(),adminService.updateDish(request).getAvailable());
-//        assertEquals(response.getDishName(),adminService.updateDish(request).getDishName());
-//        assertEquals(response.getDishCost(),adminService.updateDish(request).getDishCost());
     }
 
     @Test
     public void testRemoveDish(){
-        Dish dish=new Dish();
-        dish.setActive(true);
-        dish.setAvailable(10);
-        dish.setCost(10.0);
-        dish.setName("Momo");
 
         Mockito.when(dishRepo.findById(Mockito.anyInt())).thenReturn(Optional.of(dish));
         Mockito.when(dishRepo.save(Mockito.any(Dish.class))).thenReturn(dish);
 
         adminService.removeDish(1);
-
     }
 
 
     @Test
     public void testRemoveDish_DishNotFound(){
-        Dish dish=new Dish();
-        dish.setActive(true);
-        dish.setAvailable(10);
-        dish.setCost(10.0);
-        dish.setName("Momo");
 
         Mockito.when(dishRepo.findById(Mockito.anyInt())).thenReturn(Optional.empty());
-        Mockito.when(dishRepo.save(Mockito.any(Dish.class))).thenReturn(dish);
-
         assertThrows(DishNotFoundException.class,()->adminService.removeDish(1));
-
     }
 
     @Test
     public void testGetAllDishes(){
-        Dish dish=new Dish();
-        dish.setActive(true);
-        dish.setAvailable(10);
-        dish.setCost(10.0);
-        dish.setName("Momo");
 
         DishResponse response=new DishResponse();
         response.setDishCost(10.0);

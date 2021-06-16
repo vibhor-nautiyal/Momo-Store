@@ -70,7 +70,6 @@ public class Transformer {
 
     public OrderResponse orderToOrderResponse(Order order) {
         OrderResponse response=new OrderResponse();
-//        response.setOrderId(order.getId());
         response.setTime(order.getTime());
         response.setScheduledTime(order.getScheduledTime());
         response.setPrice(order.getPrice());

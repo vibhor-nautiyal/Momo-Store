@@ -9,7 +9,6 @@ import java.util.Date;
 @Setter
 public class OrderResponse {
 
-//    Integer orderId;
     Double price;
     Date time;
     Date scheduledTime;

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -34,7 +33,6 @@ public class AdminController {
 
     @PostMapping("/dish")
     public ResponseEntity<DishResponse> addNewDish(@RequestBody  NewDishRequest request){
-//        return ResponseEntity.of(Optional.of(adminService.addNewDish(request)));
         return new ResponseEntity<>(adminService.addNewDish(request),HttpStatus.CREATED);
     }
 
@@ -45,9 +43,7 @@ public class AdminController {
 
     @DeleteMapping("/dish/{id}")
     public ResponseEntity<String> deleteDish(@PathVariable Integer id){
-        System.out.println(id);
         adminService.removeDish(id);
-        System.out.println(id);
         return new ResponseEntity<>("Dish with id="+id+" deleted",HttpStatus.OK);
     }
 }
