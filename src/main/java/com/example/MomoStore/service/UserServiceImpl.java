@@ -1,5 +1,6 @@
 package com.example.MomoStore.service;
 
+import com.example.MomoStore.MomoStoreApplication;
 import com.example.MomoStore.dto.Transformer;
 import com.example.MomoStore.dto.request.*;
 import com.example.MomoStore.dto.response.OrderResponse;
@@ -7,6 +8,8 @@ import com.example.MomoStore.dto.response.UserResponse;
 import com.example.MomoStore.entity.*;
 import com.example.MomoStore.exception.*;
 import com.example.MomoStore.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ public class UserServiceImpl implements UserService{
     private DishRepo dishRepo;
     private OrderRepo orderRepo;
     private OrderItemRepo orderItemRepo;
+    private static final Logger log= LoggerFactory.getLogger(MomoStoreApplication.class.getName());
 
     @Autowired
     public UserServiceImpl(UserRepo userRepo,Transformer transformer,CartItemRepo cartItemRepo,DishRepo dishRepo,OrderRepo orderRepo,OrderItemRepo orderItemRepo){
@@ -42,11 +46,13 @@ public class UserServiceImpl implements UserService{
         User user=transformer.newUserRequestToUser(request);
         user=userRepo.save(user);
         UserResponse response=transformer.userToUserResponse(user);
+        log.info("New user created");
         return response;
     }
 
     public UserResponse getUserById(Integer id){
         User user=userRepo.findById(id).orElseThrow(()->new UserNotFoundException("User with id "+id+" not found."));
+        log.info("Fetching user by id={}",id);
         return transformer.userToUserResponse(user);
     }
 
@@ -57,6 +63,7 @@ public class UserServiceImpl implements UserService{
         user.setAddress(request.getAddress());
         user.setName(request.getName());
         user=userRepo.save(user);
+        log.info("Updating using with id={}",request.getId());
         return transformer.userToUserResponse(user);
     }
 
@@ -64,6 +71,7 @@ public class UserServiceImpl implements UserService{
         User user=userRepo.findById(id).orElseThrow(()->new UserNotFoundException("User with id "+id+" not found."));
         user.setActive(false);
         userRepo.save(user);
+        log.info("Deleting user with id={}",id);
     }
 
     public List<UserResponse> findAllUsers(){
@@ -73,6 +81,7 @@ public class UserServiceImpl implements UserService{
             if(user.getActive())
                 response.add(transformer.userToUserResponse(user));
         }
+        log.info("Fetching all users");
         return response;
     }
 
@@ -87,6 +96,7 @@ public class UserServiceImpl implements UserService{
         cartItemRepo.save(cartItem);
         user.getCart().add(cartItem);
         userRepo.save(user);
+        log.info("Item with id={} added to cart",request.getDishId());
         return transformer.userToUserResponse(user);
     }
 
@@ -100,14 +110,14 @@ public class UserServiceImpl implements UserService{
         CartItem cartItem=cartItemRepo.findByUserIdAndDishId(request.getUserId(), request.getDishId());
         cartItem.setQuantity(request.getQuantity());
         cartItemRepo.save(cartItem);
-//        user.getCart().add(cartItem);
-//        userRepo.save(user);
+        log.info("Updated quantity in cart for item id={}",request.getDishId());
         return transformer.userToUserResponse(user);
     }
 
     public UserResponse removeFromCart(RemoveFromCartRequest request){
 
         cartItemRepo.deleteByUserIdAndDishId(request.getUserId(),request.getDishId());
+        log.info("Item with id={} removed from cart",request.getDishId());
         return transformer.userToUserResponse(userRepo.findById(request.getUserId()).orElseThrow(()-> new UserNotFoundException("User with id="+request.getUserId()+" not found.")));
     }
 
@@ -143,7 +153,7 @@ public class UserServiceImpl implements UserService{
         user.getHistory().add(order);
         user.getCart().clear();
         userRepo.save(user);
-
+        log.info("Order placed for user id={}",id);
         return transformer.orderToOrderResponse(order);
     }
 
@@ -181,7 +191,7 @@ public class UserServiceImpl implements UserService{
         user.getHistory().add(order);
         user.getCart().clear();
         userRepo.save(user);
-
+        log.info("Order placed for user id={}",request.getUserId());
         return transformer.orderToOrderResponse(order);
     }
 
@@ -197,6 +207,7 @@ public class UserServiceImpl implements UserService{
             }
             orderRepo.save(order);
         }
+        log.info("Changed status for current scheduled jobs to active");
     }
 
     public OrderResponse cancelOrder(Integer id){
@@ -217,6 +228,7 @@ public class UserServiceImpl implements UserService{
                 dish.setAvailable(dish.getAvailable()+item.getQuantity());
                 dishRepo.save(dish);
             }
+            log.info("Order with id={} cancelled",id);
             return transformer.orderToOrderResponse(order);
         }
         else{
@@ -232,6 +244,7 @@ public class UserServiceImpl implements UserService{
                 dishRepo.save(dish);
             }
             order=orderRepo.save(order);
+            log.info("Order with id={} cancelled",id);
             return transformer.orderToOrderResponse(order);
         }
     }
@@ -240,6 +253,7 @@ public class UserServiceImpl implements UserService{
         Order order=orderRepo.findById(orderId).orElseThrow(()->new OrderNotFoundException("Order with id="+orderId+" not found"));
         order.setStatus("completed");
         orderRepo.save(order);
+        log.info("Order with id={} is complete",orderId);
         return transformer.orderToOrderResponse(order);
     }
 }
