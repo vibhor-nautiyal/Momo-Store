@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -56,5 +57,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> parseException(ParseException e){
         log.warn("Error in parsing date");
         return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> illegalArgs(MethodArgumentNotValidException e){
+        log.warn("Invalid Argument Found");
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
     }
 }

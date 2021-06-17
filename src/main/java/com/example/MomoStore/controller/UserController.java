@@ -7,10 +7,13 @@ import com.example.MomoStore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
 import java.text.ParseException;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -23,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping("/new-user")
-    public ResponseEntity<UserResponse> createUser(@RequestBody NewUserRequest request){
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody NewUserRequest request){
 
         UserResponse response=userService.createUser(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -46,7 +49,7 @@ public class UserController {
     }
 
     @PatchMapping("")
-    public ResponseEntity<UserResponse> updateUser(@RequestBody  UpdateUserRequest request){
+    public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody  UpdateUserRequest request){
         return new ResponseEntity<>(userService.updateUser(request),HttpStatus.OK);
     }
 
@@ -57,17 +60,17 @@ public class UserController {
     }
 
     @PostMapping("/cart")
-    public ResponseEntity<UserResponse> addToCart(@RequestBody AddToCartRequest request){
+    public ResponseEntity<UserResponse> addToCart(@Valid @RequestBody AddToCartRequest request){
         return new ResponseEntity<>(userService.addToCart(request),HttpStatus.CREATED);
     }
 
     @DeleteMapping("/cart-item")
-    public ResponseEntity<UserResponse> removeFromCart(@RequestBody RemoveFromCartRequest request){
+    public ResponseEntity<UserResponse> removeFromCart(@Valid @RequestBody RemoveFromCartRequest request){
         return new ResponseEntity<>(userService.removeFromCart(request),HttpStatus.OK);
     }
 
     @PatchMapping("/cart-item")
-    public ResponseEntity<UserResponse> updateCartItem(@RequestBody AddToCartRequest request){
+    public ResponseEntity<UserResponse> updateCartItem(@Valid @RequestBody AddToCartRequest request){
         return new ResponseEntity<>(userService.updateCartItem(request),HttpStatus.OK);
     }
 
@@ -78,7 +81,7 @@ public class UserController {
     }
 
     @PostMapping("/scheduledOrder")
-    public ResponseEntity<OrderResponse> scheduledOrder(@RequestBody ScheduledOrderRequest request) throws ParseException {
+    public ResponseEntity<OrderResponse> scheduledOrder(@Valid @RequestBody ScheduledOrderRequest request) throws ParseException {
             return new ResponseEntity<>(userService.checkoutScheduled(request),HttpStatus.CREATED);
     }
 

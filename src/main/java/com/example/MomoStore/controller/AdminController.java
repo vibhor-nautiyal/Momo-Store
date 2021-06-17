@@ -7,9 +7,13 @@ import com.example.MomoStore.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -32,12 +36,12 @@ public class AdminController {
     }
 
     @PostMapping("/dish")
-    public ResponseEntity<DishResponse> addNewDish(@RequestBody  NewDishRequest request){
+    public ResponseEntity<DishResponse> addNewDish(@Valid @RequestBody  NewDishRequest request){
         return new ResponseEntity<>(adminService.addNewDish(request),HttpStatus.CREATED);
     }
 
     @PatchMapping("/dish")
-    public ResponseEntity<DishResponse> updateDish(@RequestBody UpdateDishRequest request){
+    public ResponseEntity<DishResponse> updateDish(@Valid @RequestBody UpdateDishRequest request){
         return new ResponseEntity<>(adminService.updateDish(request),HttpStatus.OK);
     }
 

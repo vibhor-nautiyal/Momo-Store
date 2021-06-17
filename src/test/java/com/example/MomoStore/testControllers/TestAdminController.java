@@ -70,22 +70,48 @@ public class TestAdminController {
     public void testAddNewDish() throws Exception {
 
         String uri="/admin/dish";
+
+        NewDishRequest request=new NewDishRequest();
+        request.setCost(10.0);
+        request.setName("Dish");
+
         Mockito.when(adminService.addNewDish(Mockito.any(NewDishRequest.class))).thenReturn(new DishResponse());
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(new NewDishRequest()))).andReturn();
+                .accept(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(request))).andReturn();
 
         assertEquals(201,mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    public void testAddNewDish_InvalidArgument() throws Exception {
+
+        String uri="/admin/dish";
+
+        NewDishRequest request=new NewDishRequest();
+        request.setCost(10.0);
+
+        Mockito.when(adminService.addNewDish(Mockito.any(NewDishRequest.class))).thenReturn(new DishResponse());
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(request))).andReturn();
+
+        assertEquals(400,mvcResult.getResponse().getStatus());
     }
 
     @Test
     public void testAddNewDish_DuplicateData() throws Exception {
 
         String uri="/admin/dish";
+
+        NewDishRequest request=new NewDishRequest();
+        request.setCost(10.0);
+        request.setName("Dish");
+
         Mockito.when(adminService.addNewDish(Mockito.any(NewDishRequest.class))).thenThrow(new DataIntegrityViolationException("Duplicate entry found"));
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(new NewDishRequest()))).andReturn();
+                .accept(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(request))).andReturn();
 
         assertEquals(500,mvcResult.getResponse().getStatus());
     }
@@ -95,8 +121,13 @@ public class TestAdminController {
         String uri="/admin/dish";
         Mockito.when(adminService.updateDish(Mockito.any(UpdateDishRequest.class))).thenReturn(new DishResponse());
 
+        UpdateDishRequest request=new UpdateDishRequest();
+        request.setDishId(1);
+        request.setAvailable(10);
+        request.setCost(10.0);
+
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch(uri).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(new UpdateDishRequest()))).andReturn();
+                .accept(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(request))).andReturn();
 
         assertEquals(200,mvcResult.getResponse().getStatus());
     }
@@ -106,8 +137,13 @@ public class TestAdminController {
         String uri="/admin/dish";
         Mockito.when(adminService.updateDish(Mockito.any(UpdateDishRequest.class))).thenThrow(new DishNotFoundException("Dish not found"));
 
+        UpdateDishRequest request=new UpdateDishRequest();
+        request.setDishId(1);
+        request.setAvailable(10);
+        request.setCost(10.0);
+
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch(uri).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(new UpdateDishRequest()))).andReturn();
+                .accept(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(request))).andReturn();
 
         assertEquals(404,mvcResult.getResponse().getStatus());
     }
