@@ -8,19 +8,18 @@ import com.example.MomoStore.dto.response.DishResponse;
 import com.example.MomoStore.entity.Dish;
 import com.example.MomoStore.exception.DishNotFoundException;
 import com.example.MomoStore.repository.DishRepo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class AdminServiceImpl  implements AdminService{
 
     private DishRepo dishRepo;
     private Transformer transformer;
-    private static final Logger log= LoggerFactory.getLogger(MomoStoreApplication.class.getName());
     @Autowired
     public AdminServiceImpl(DishRepo dishRepo,Transformer transformer){
         this.dishRepo=dishRepo;
@@ -52,13 +51,13 @@ public class AdminServiceImpl  implements AdminService{
 
     public List<DishResponse> getAllDishes(){
         Iterable<Dish> dishes=dishRepo.findAll();
-        List<DishResponse> response=new ArrayList<>();
+        List<DishResponse> responses=new ArrayList<>();
         for(Dish dish:dishes){
             if(dish.getActive())
-               response.add(transformer.dishToDishResponse(dish));
+               responses.add(transformer.dishToDishResponse(dish));
         }
         log.info("Fetching all dishes");
-        return response;
+        return responses;
     }
 
 }

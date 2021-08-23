@@ -458,7 +458,7 @@ public class TestUserService {
 
         ScheduledOrderRequest request=new ScheduledOrderRequest();
         request.setUserId(1);
-        request.setScheduledTime("Wed Jun 16 13:00:00 GMT 2021");
+        request.setScheduledTime("Wed Jun 16 13:00:00 IST 2021");
 
         CartItem cartItem=new CartItem();
         cartItem.setQuantity(1);
